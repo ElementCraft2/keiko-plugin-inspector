@@ -370,6 +370,7 @@ public final class Keiko {
     }
 
     private void checkForUpdates() {
+        if (true) return; // disable
         int intervalMinutes = GlobalConfig.getUpdaterIntervalMinutes();
         KeikoUpdater updater = new KeikoUpdater(
                 env.getBuildProperties().getVersion(), GlobalConfig.getUpdaterDownload());

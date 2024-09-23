@@ -131,8 +131,7 @@ public class IndexPluginPhase extends Phase<JarFile, IndexedPlugin> {
 
         String sha512 = StringUtils.sha512(pluginFile);
 
-        return new EmittedValue<>(
-               new IndexedPlugin(pluginFile, pluginClasses, pluginName, sha512));
+        return new EmittedValue<>(new IndexedPlugin(pluginFile, pluginClasses, pluginName, sha512));
     }
 
 }

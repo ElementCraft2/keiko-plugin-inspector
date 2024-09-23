@@ -49,18 +49,18 @@ public class PluginContext {
 
     public IndexedPlugin getJarOwner(@NonNull File pluginJar) {
         return plugins.stream().filter(plugin
-                -> plugin.getJar().equals(pluginJar)).findAny().orElse(null);
+                -> plugin.jar().equals(pluginJar)).findAny().orElse(null);
     }
 
     public IndexedPlugin getClassOwner(@NonNull String className) {
         // Note: className in format "x.y.z", NOT "x/y/z"!
         return plugins.stream().filter(plugin
-                -> plugin.getClasses().contains(className)).findAny().orElse(null);
+                -> plugin.classes().contains(className)).findAny().orElse(null);
     }
 
     public IndexedPlugin getPlugin(@NonNull String name) {
         return plugins.stream().filter(plugin
-                -> plugin.getName().equalsIgnoreCase(name)).findAny().orElse(null);
+                -> plugin.name().equalsIgnoreCase(name)).findAny().orElse(null);
     }
 
     public static PluginContext currentContext() {
@@ -113,7 +113,7 @@ public class PluginContext {
 
                         Keiko.INSTANCE.getLogger().debugLocalized(
                                 "pluginsIndex.indexedInfo",
-                                plugin.getName(), plugin.getJar().getName(), plugin.getClasses().size());
+                                plugin.name(), plugin.jar().getName(), plugin.classes().size());
                     } else {
                         Keiko.INSTANCE.getLogger().warningLocalized(
                                 "pluginsIndex.indexErr", file.getName());

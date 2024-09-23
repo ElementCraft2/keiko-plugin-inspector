@@ -67,8 +67,8 @@ public abstract class StaticAnalysis implements ClassWalker {
         IndexedPlugin plugin = Keiko.INSTANCE.getEnv().getPluginContext().getClassOwner(className);
 
         return new Identity(
-                plugin.getJar().getAbsolutePath(),
-                plugin.getName(),
+                plugin.jar().getAbsolutePath(),
+                plugin.name(),
                 className,
                 mtd != null ? mtd.name : ""
         );

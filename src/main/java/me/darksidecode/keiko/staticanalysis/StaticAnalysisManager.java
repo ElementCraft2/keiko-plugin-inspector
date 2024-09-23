@@ -90,11 +90,11 @@ public class StaticAnalysisManager {
 
             if (cacheToPush != null) {
                 try {
-                    cacheManager.push(plugin.getSha512(), cacheToPush);
+                    cacheManager.push(plugin.sha512(), cacheToPush);
                     cachesToPush.remove(plugin);
                 } catch (Exception ex) {
                     Keiko.INSTANCE.getLogger().warningLocalized("staticInspections.caches.err");
-                    Keiko.INSTANCE.getLogger().error("Unhandled exception in: push [%s]", plugin.getName(), ex);
+                    Keiko.INSTANCE.getLogger().error("Unhandled exception in: push [%s]", plugin.name(), ex);
                 }
             }
         }
@@ -205,7 +205,7 @@ public class StaticAnalysisManager {
 
             Keiko.INSTANCE.getLogger().logLocalized(
                     logLevel, basePluginFmt, "staticInspections.pluginResults",
-                    plugin.getName(), plugin.getJar().getName());
+                    plugin.name(), plugin.jar().getName());
 
             for (StaticAnalysisResult result : pluginResults) {
                 String typeI18nKey = "staticInspections." + result.getType().name().toLowerCase();
@@ -216,7 +216,7 @@ public class StaticAnalysisManager {
                 Keiko.INSTANCE.getLogger().logLocalized(
                         logLevel, ansiFmt, "staticInspections.analysisName", result.getScannerName());
                 Keiko.INSTANCE.getLogger().logLocalized(
-                        logLevel, ansiFmt, analysisDescI18nKey, plugin.getName(), plugin.getJar().getName());
+                        logLevel, ansiFmt, analysisDescI18nKey, plugin.name(), plugin.jar().getName());
                 Keiko.INSTANCE.getLogger().logLocalized(logLevel, ansiFmt, "staticInspections.details");
 
                 int counter = 0;
@@ -229,7 +229,7 @@ public class StaticAnalysisManager {
 
             Keiko.INSTANCE.getLogger().logLocalized(
                     logLevel, basePluginFmt, "staticInspections.pluginSummary",
-                    warnings, critical, plugin.getName(), plugin.getJar().getName());
+                    warnings, critical, plugin.name(), plugin.jar().getName());
 
             Keiko.INSTANCE.getLogger().log(logLevel, basePluginFmt, " ");
             Keiko.INSTANCE.getLogger().log(logLevel, basePluginFmt, " ");
@@ -268,7 +268,7 @@ public class StaticAnalysisManager {
 
             if (InspectionsConfig.getHandle().get(configName + ".enabled", true)) {
                 try {
-                    String inputJarPath = plugin.getJar().getAbsolutePath()
+                    String inputJarPath = plugin.jar().getAbsolutePath()
                             .replace("\\", "/"); // better Windows compatibility
                     List<String> exclusions = InspectionsConfig.getHandle()
                             .get(configName + ".exclusions", Collections.emptyList());
@@ -298,10 +298,10 @@ public class StaticAnalysisManager {
         InspectionCache cache = null;
 
         try {
-            cache = cacheManager.fetch(plugin.getSha512());
+            cache = cacheManager.fetch(plugin.sha512());
         } catch (Exception ex) {
             Keiko.INSTANCE.getLogger().warningLocalized("staticInspections.caches.err");
-            Keiko.INSTANCE.getLogger().error("Unhandled exception in: fetch [%s]", plugin.getName(), ex);
+            Keiko.INSTANCE.getLogger().error("Unhandled exception in: fetch [%s]", plugin.name(), ex);
         }
 
         if (cache == null)
@@ -311,7 +311,7 @@ public class StaticAnalysisManager {
         Map<String, List<StaticAnalysisResult>> cachedAnalysesResults = finalCache.getAnalysesResults();
 
         try (Workflow workflow = new Workflow()
-                .phase(new OpenJarFilePhase(plugin.getJar()))
+                .phase(new OpenJarFilePhase(plugin.jar()))
                 .phase(new DisassemblePhase(SimpleJavaDisassembler.class))) {
             int cached = 0;
 
@@ -322,14 +322,14 @@ public class StaticAnalysisManager {
                 if (cachedResults != null) {
                     Keiko.INSTANCE.getLogger().debugLocalized(
                             "staticInspections.caches.resultCached",
-                            inspectionName, plugin.getName(), plugin.getJar().getName(), cachedResults.size());
+                            inspectionName, plugin.name(), plugin.jar().getName(), cachedResults.size());
 
                     results.get(plugin).addAll(cachedResults);
                     cached++;
                 } else {
                     Keiko.INSTANCE.getLogger().debugLocalized(
                             "staticInspections.caches.resultNotCached",
-                            inspectionName, plugin.getName(), plugin.getJar().getName());
+                            inspectionName, plugin.name(), plugin.jar().getName());
 
                     workflow.phase(new WalkClassesPhase(inspection));
                     cachesToPush
@@ -351,7 +351,7 @@ public class StaticAnalysisManager {
                             : 0; // false
 
                     Keiko.INSTANCE.getLogger().warningLocalized("staticInspections.err",
-                            isFatal, plugin.getName(), plugin.getJar().getName());
+                            isFatal, plugin.name(), plugin.jar().getName());
 
                     for (PhaseExecutionException error : workflow.getAllErrorsChronological())
                         Keiko.INSTANCE.getLogger().error("JMinima phase execution error:", error);
@@ -362,7 +362,7 @@ public class StaticAnalysisManager {
 
             Keiko.INSTANCE.getLogger().debugLocalized(
                     "staticInspections.caches.analysisStats",
-                    inspections.size(), plugin.getName(), plugin.getJar().getName(), cached);
+                    inspections.size(), plugin.name(), plugin.jar().getName(), cached);
 
             return false; // inspection succeeded
         }

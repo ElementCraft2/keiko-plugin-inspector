@@ -39,7 +39,7 @@ public final class RuntimeUtils {
 
             if (plugin != null)
                 return new Identity(
-                        plugin.getJar().getAbsolutePath(), plugin.getName(),
+                        plugin.jar().getAbsolutePath(), plugin.name(),
                         callerClassName, callerMethodName
                 );
         }

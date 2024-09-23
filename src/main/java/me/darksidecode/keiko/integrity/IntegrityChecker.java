@@ -41,23 +41,16 @@ public class IntegrityChecker {
         // Key - plugin name. Value - plugin jar SHA-512 checksum string.
         Map<String, String> checksums = cacheFile.read();
         int readHash = checksums.hashCode();
-        Collection<String> excludedPlugins = null;
-
-        try {
-            excludedPlugins = InspectionsConfig.getHandle().get("integrity_exclusions");
-        } catch (Exception ignored) {}
-
-        if (excludedPlugins == null)
-            excludedPlugins = Collections.EMPTY_LIST;
+        Collection<String> excludedPlugins = InspectionsConfig.getHandle().get("integrity_exclusions", Collections.emptyList());
 
         for (IndexedPlugin plugin : pluginContext.getPlugins()) {
-            String plugName = plugin.getName();
+            String plugName = plugin.name();
 
             if (excludedPlugins.contains(plugName))
                 continue;
 
             String cachedChecksum = checksums.get(plugName);
-            String actualChecksum = plugin.getSha512();
+            String actualChecksum = plugin.sha512();
 
             if (cachedChecksum == null)
                 // Cache plugin's current checksum automatically.

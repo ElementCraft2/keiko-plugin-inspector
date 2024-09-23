@@ -25,16 +25,5 @@ import lombok.RequiredArgsConstructor;
 import java.io.File;
 import java.util.Collection;
 
-@Getter
-@RequiredArgsConstructor
-public class IndexedPlugin {
-
-    private final File jar;
-
-    private final Collection<String> classes;
-
-    private final String name;
-
-    private final String sha512;
-
+public record IndexedPlugin(File jar, Collection<String> classes, String name, String sha512) {
 }

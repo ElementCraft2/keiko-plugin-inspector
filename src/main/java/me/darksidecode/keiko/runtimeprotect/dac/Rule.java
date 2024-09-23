@@ -102,7 +102,7 @@ class Rule {
                 if (filteredPlugin == null)
                     throw new NoSuchElementException("no such plugin installed: \"" + pluginName + "\"");
 
-                filteredObject = filteredPlugin.getName();
+                filteredObject = filteredPlugin.name();
             } else if (identityFilter == IdentityFilter.SOURCE) {
                 String source = identityArgs[1].trim();
 
@@ -129,8 +129,8 @@ class Rule {
 
             if (filteredPlugin != null)
                 arg = arg.
-                        replace("{plugin_name}", filteredPlugin.getName()).
-                        replace("{plugin_jar_path}", filteredPlugin.getJar().getAbsolutePath().
+                        replace("{plugin_name}", filteredPlugin.name()).
+                        replace("{plugin_jar_path}", filteredPlugin.jar().getAbsolutePath().
                                 replace("\\", "/") /* better Windows compatibility */);
 
             this.arg = arg;

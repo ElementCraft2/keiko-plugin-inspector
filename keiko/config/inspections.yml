@@ -1,0 +1,155 @@
+#### Keiko: Inspections Configuration #############################################
+#
+#   Welcome here!
+#
+#   This file lets you configure, as its name supposes, Keiko's inspections
+# (analyses). In particular, it lets you configure so-called "static" analyses -
+# the ones that run at server's early boot (startup) and check plugins before
+# they actually load.
+#
+#   Useful stuff:
+#
+#     1. Keiko Wiki (a lot of useful information):
+#        --> https://github.com/MeGysssTaa/keiko-plugin-inspector/wiki
+#
+#     2. Keiko Discord (for questions, discussion, and live support):
+#        --> https://discord.gg/QWHzCXX
+#
+###################################################################################
+
+
+
+
+# List of directories which Keiko should treat as plugins folders. Keiko will ensure integrity
+# of all JAR-files inside these directories, and will run its static inspections on all such
+# JAR-files as well. If you are using modular plugins, or plugins that can link additional code
+# (add-ons, or extensions), then those plugins' modules/extensions' source directories (where
+# the JAR files are loaded from) should be listed here, since such add-ons may contain malicious
+# code as well. Despite being placed inside 'inspections.yml', this setting also affects Keiko's
+# RuntimeProtect features, such as DAC -- if a plugin runs some code, but that plugin's JAR-file
+# is not inside any of the directories listed below, then Keiko will be unable to check that
+# plugin's security permissions, and it will be able to do anything without restrictions.
+#
+# If a plugin detected by Keiko does not contain 'plugin.yml' nor 'bungee.yml', then Keiko will
+# infer plugin name from its JAR-file name (for example, a plugin whose file name is "CoolThing.jar"
+# will be named "CoolThing" by Keiko). This behavior /may/ change in the future.
+scanned_directories:
+  - "{server_folder}/plugins"
+  - "{server_folder}/plugins/PlaceholderAPI/expansions"
+
+# Names of plugins whose integrity should not be ensured. Keiko will exclude them
+# from checksum checking. It is strongly not recommended to list many plugins here.
+integrity_exclusions: []
+
+# Should Keiko run static plugins inspections in parallel (multi-threaded)?
+# Enabling this generally results in faster static inspections, and hence, startup.
+# Disabling this will cause all static inspections to run sequently in one thread.
+parallel: true
+
+
+
+
+# Static inspections configuration.
+#
+# Static inspections are inspections that always run at server's early boot stage
+# and analyse bytecode (signature check) of all plugins before letting them run,
+# thus detecting potential threats even before a malicious plugin is ran.
+#
+# TIP: you can use all typical placeholders in all exclusions. A few examples:
+#      - {plugins_folder}/ProtocolLib.jar
+#      - {server_folder}/some_file.sh
+static:
+
+  # Pirated copies of premium plugins are often malicious. By using a cracked plugin,
+  # you are putting your server under the risk of being accessed or destroyed externally.
+  # Usage of pirated plugins is one of the most common reason of servers' databases and
+  # whole builds (maps, custom gamemodes, etc.) being leaked. By using genuine software
+  # you support the original developers, help them maintain the product, get the ability
+  # to report bugs, request help, and receive regular updates, and, most importantly, you
+  # keep your server safe - paid plugins are often analyzed by the marketplace staff.
+  # This inspection detects illegal, unlicensed software downloaded from DirectLeaks.
+  direct_leaks:
+    enabled: true
+    countermeasures:
+      vulnerable: always abort
+    exclusions: []
+
+  # ForceOP is usually referred to as code that gives specific player or a group of
+  # players server operator (OP) permissions using Player#setOp or Bukkit commands ("/op").
+  #
+  # (-*-) Keiko is capable of blocking ForceOP at runtime using RuntimeProtect.
+  force_op:
+    enabled: true
+    countermeasures:
+      malicious: always abort
+    exclusions: []
+
+  # "Natives" are extra files with code written in languages other than Java (e.g. C, C++)
+  # that allow Java software to perform something out of JVM. This is very rarely used by
+  # plugins, but may be abused by hackers to bypass Keiko Domain Access Control restrictions.
+  #
+  # (-*-) Keiko is capable of blocking NativesLoader at runtime using RuntimeProtect.
+  natives_loader:
+    enabled: true
+    countermeasures:
+      malicious: always abort
+    exclusions: []
+
+  # Plugins should not shutdown your server normally. And even if they do, they must use the appropriate
+  # Bukkit#shutdown() method for that since System.exit/Runtime.getRuntime().exit do not let the server
+  # to finish its workflow properly, thus leading to unexpected issues/bugs such as server not responding
+  # to commands (including Ctrl+C) and not performing world save.
+  #
+  # (-*-) Keiko is capable of blocking SystemExit at runtime using RuntimeProtect.
+  system_exit:
+    enabled: true
+    exclusions: []
+
+  # There are many malicious plugins out there that can harm your server by executing
+  # certain system (Linux/Windows) commands like in SSH (e.g. 'rm -rf /' that deletes
+  # everything on your machine). Ordinary plugins should never use such Java capabilities.
+  #
+  # (-*-) Keiko is PARTIALLY(!) capable of blocking SystemProcess at runtime using RuntimeProtect.
+  #       There are still cases when RuntimeProtect is unable to prevent ProcessBuilder usage, so it is strongly
+  #       recommended that you let Keiko shut your server down forcefully if it detects a suspicious plugin
+  #       that can harm your server using "SSH-like" system commands.
+  system_process:
+    enabled: true
+    exclusions: []
+
+  # Some of the most aggressive trojans often modify compiled code (bytecode) in other,
+  # already installed and/or running plugins at runtime, and inject own, malicious, code
+  # in them, or even in your server core. This way an attacker can keep the trojan running
+  # on your machine even after you delete the initial infected plugin. Keiko attempts to
+  # detect suspicious use of Java runtime class loading and bytecode instrumentation mechanisms.
+  code_injection:
+    enabled: true
+    countermeasures:
+      malicious: always abort
+    exclusions: []
+
+  # Some malicious plugins may give certain players extra permissions using permissions
+  # plugins APIs (public code that they export) or their commands (e.g. "/lp", "/pex").
+  # That is, this is basically a permissions plugins variant of the Static.ForceOp inspection,
+  # but much more strict - because it checks *any* permissions plugins interaction.
+  # Plugins only need the basic Bukkit API to check permissions, so explicit (direct)
+  # use of the LuckPerms API may indicate that the plugin is able to harm your server.
+  permissions_plugins_abuse:
+    enabled: true
+    exclusions:
+      - PLUGIN=LuckPerms
+      - PLUGIN=PermissionsEx
+      - PLUGIN=Vault
+
+  # Keiko has no publicly exposed APIs that plugins can be based on. Normally, plugins don't even
+  # need to know whether Keiko is present on your server or not to function. That is, legitimate
+  # plugins should never attempt to use Keiko's internal classes. However, malware may try to hack
+  # into Keiko's implementation to circumvent its restrictions and detections. For example, a malicious
+  # plugin may try to add itself into Keiko's DAC exclusions list at run-time (right in memory) to avoid
+  # its system calls being analyzed by Keiko's Domain Access Control. Excluding plugins from this inspection
+  # might be extremely dangerous! Do so with extra caution.
+  keiko_hook:
+    enabled: true
+    countermeasures:
+      malicious: always abort
+    exclusions: []

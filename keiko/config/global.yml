@@ -1,0 +1,55 @@
+#### Keiko: Global Configuration ##################################################
+#
+#   Welcome here!
+#
+#   This file lets you configure, as its name supposes, global options, that
+# affect Keiko in general (all its parts at the same time).
+#
+#   Useful stuff:
+#
+#     1. Keiko Wiki (a lot of useful information):
+#        --> https://github.com/MeGysssTaa/keiko-plugin-inspector/wiki
+#
+#     2. Keiko Discord (for questions, discussion, and live support):
+#        --> https://discord.gg/QWHzCXX
+#
+###################################################################################
+
+
+
+
+# What locale (language) should Keiko display its messages in? ('en_US', and so on...)
+# https://github.com/MeGysssTaa/keiko-plugin-inspector/wiki/Locales
+# 'system' means that Keiko will attempt to use the current system (OS) locale.
+locale: system
+
+# Keiko updater options.
+updater:
+
+  # Updates check interval, in minutes. If set to 0, Keiko will only check for updates
+  # at startup, and will not run any periodic checks. If set to -1, Keiko will not check
+  # for updates at all (not recommended!).
+  interval_minutes: 120
+
+  # Should Keiko download and install updates automatially when it finds them?
+  # You will still have to restart your server manually for the changes to apply!
+  download: true
+
+# Keiko automatically deletes log files that are older than the number of days
+# specified below. If you don't want Keiko to manage its logs automatically,
+# you can disable this feature by setting logs_lifespan_days to -1.
+logs_lifespan_days: 14
+
+# Minimum level (severity) of messages that Keiko should log.
+# Available level names (ordered by severity, ascending):
+# --  debug  info  warning  error  user_input_request  off
+#                                                      ^^^ Disables logging completely.
+log_level:
+  console: info
+  file: debug
+
+
+# Should Keiko abort startup if it fails to analyze at least one of the plugins?
+# Enabling this is strongly (!) recommended. If you disable this, malicious plugins
+# with some tricky obfuscation/encryption may run and harm your server.
+abort_on_error: true

@@ -19,9 +19,6 @@
 
 package me.darksidecode.keiko.registry;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import java.io.File;
 import java.util.Collection;
 

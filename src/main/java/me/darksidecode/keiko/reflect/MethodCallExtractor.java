@@ -22,7 +22,6 @@ package me.darksidecode.keiko.reflect;
 import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.Method;
-import java.util.Objects;
 
 @RequiredArgsConstructor
 public class MethodCallExtractor<T> implements ReflectValueExtractor<T> {

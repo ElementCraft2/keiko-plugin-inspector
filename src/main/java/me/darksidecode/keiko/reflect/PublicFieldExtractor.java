@@ -22,7 +22,6 @@ package me.darksidecode.keiko.reflect;
 import lombok.RequiredArgsConstructor;
 
 import java.lang.reflect.Field;
-import java.util.Objects;
 
 @RequiredArgsConstructor
 public class PublicFieldExtractor<T> implements ReflectValueExtractor<T> {

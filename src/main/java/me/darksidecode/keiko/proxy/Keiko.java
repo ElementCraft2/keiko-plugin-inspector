@@ -332,6 +332,14 @@ public final class Keiko {
         indexPlugins();
         ensurePluginsIntegrity();
         runStaticAnalyses();
+
+        if (true) {
+            logger.info("Server launch is disabled in this build");
+            logger.info("You need to launch it yourself");
+            System.exit(0);
+            return;
+        }
+
         setupRuntimeProtect();
         launchProxy();
     }

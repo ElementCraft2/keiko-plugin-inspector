@@ -47,12 +47,6 @@ public class IdentityFilter {
 
                     break;
 
-                case "PLUGIN":
-                    filter = new Identity(
-                            true, null, matcher, null, null);
-
-                    break;
-
                 case "SOURCE":
                     String[] sourceMatcher = matcher.split("#");
                     String classMatcher = sourceMatcher[0].trim();
@@ -73,7 +67,9 @@ public class IdentityFilter {
                     break;
 
                 default:
-                    errorI18nKey = ERR_PREFIX + "invalidFilterType";
+                    filter = new Identity(
+                        true, null, matcher, null, null);
+
                     break;
             }
         } else

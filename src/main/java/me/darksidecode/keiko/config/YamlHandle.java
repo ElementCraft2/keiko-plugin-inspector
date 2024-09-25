@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import java.util.Map;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 public class YamlHandle {
@@ -33,6 +34,10 @@ public class YamlHandle {
 
     public <T> T get(String key) {
         return get(key, null);
+    }
+
+    public <T> T getOrError(String key) {
+        return Objects.requireNonNull(get(key, null), key);
     }
 
     public <T> T require(String key) {

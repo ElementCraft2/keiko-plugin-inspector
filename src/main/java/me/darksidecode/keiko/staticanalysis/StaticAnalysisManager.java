@@ -111,12 +111,12 @@ public class StaticAnalysisManager {
 
     public void addResult(@NonNull StaticAnalysisResult result) {
         InspectionCache cache = cachesToPush
-                .computeIfAbsent(result.getAnalyzedPlugin(),
-                        k -> InspectionCache.createEmptyCache());
+            .computeIfAbsent(result.getAnalyzedPlugin(),
+                k -> InspectionCache.createEmptyCache());
 
         List<StaticAnalysisResult> cachedResults = cache.getAnalysesResults()
-                .computeIfAbsent(result.getScannerName(),
-                        k -> new ArrayList<>());
+            .computeIfAbsent(result.getScannerName(),
+                k -> new ArrayList<>());
 
         cachedResults.add(result);
         results.get(result.getAnalyzedPlugin()).add(result);
@@ -130,7 +130,7 @@ public class StaticAnalysisManager {
                 String countermeasuresType = result.getType().name().toLowerCase();
                 String configScannerName = StaticAnalysis.inspectionNameToConfigName(result.getScannerName());
                 String countermeasuresString = InspectionsConfig.getHandle()
-                        .get(configScannerName + ".countermeasures." + countermeasuresType);
+                    .get(configScannerName + ".countermeasures." + countermeasuresType);
 
                 Countermeasures countermeasures = Countermeasures.fromString(countermeasuresString);
 
@@ -146,15 +146,15 @@ public class StaticAnalysisManager {
             else {
                 // Message like "Continue anyway? [yes/no]"
                 String prompt = I18n.get("staticInspections.proceedAnywayPrompt")
-                        + " [" + I18n.get("prompts.yes") + "/" + I18n.get("prompts.no") + "]";
+                                + " [" + I18n.get("prompts.yes") + "/" + I18n.get("prompts.no") + "]";
 
                 // Prompt user to enter "yes" or "no" explicitly.
                 return !UserInputRequest.newBuilder(System.in, YesNo.class)
-                        .prompt(Keiko.INSTANCE.getLogger(), prompt)
-                        .lineTransformer(String::trim)
-                        .build()
-                        .block()
-                        .toBoolean(); // TRUE = user wants the server to start, FALSE = user wants the startup to abort
+                    .prompt(Keiko.INSTANCE.getLogger(), prompt)
+                    .lineTransformer(String::trim)
+                    .build()
+                    .block()
+                    .toBoolean(); // TRUE = user wants the server to start, FALSE = user wants the startup to abort
             }
         }
 
@@ -163,15 +163,15 @@ public class StaticAnalysisManager {
 
     public boolean isExcluded(@NonNull StaticAnalysis inspection, @NonNull Identity identity) {
         return getExclusions(inspection).stream()
-                .anyMatch(exclusion -> exclusion.matches(identity));
+            .anyMatch(exclusion -> exclusion.matches(identity));
     }
 
     private Collection<IdentityFilter> getExclusions(StaticAnalysis inspection) {
         String scannerName = inspection.getScannerName();
 
         return exclusions.computeIfAbsent(scannerName, k -> // lazy get
-                ConfigurationUtils.getExclusionsList(InspectionsConfig.getHandle(),
-                        StaticAnalysis.inspectionNameToConfigName(scannerName) + ".exclusions"));
+            ConfigurationUtils.getExclusionsList(InspectionsConfig.getHandle(),
+                StaticAnalysis.inspectionNameToConfigName(scannerName) + ".exclusions"));
     }
 
     private int printResultsAndCountWarnings() {
@@ -182,7 +182,7 @@ public class StaticAnalysisManager {
             int warnings = 0, critical = 0;
 
             for (StaticAnalysisResult result : pluginResults) {
-                if (result.getType() != StaticAnalysisResult.Type.CLEAN    ) warnings++;
+                if (result.getType() != StaticAnalysisResult.Type.CLEAN) warnings++;
                 if (result.getType() == StaticAnalysisResult.Type.MALICIOUS) critical++;
             }
 
@@ -201,11 +201,11 @@ public class StaticAnalysisManager {
                 basePluginFmt = KeikoLogger.RED;
 
             KeikoLogger.Level logLevel = warnings == 0
-                    ? KeikoLogger.Level.DEBUG : KeikoLogger.Level.WARNING;
+                ? KeikoLogger.Level.DEBUG : KeikoLogger.Level.WARNING;
 
             Keiko.INSTANCE.getLogger().logLocalized(
-                    logLevel, basePluginFmt, "staticInspections.pluginResults",
-                    plugin.name(), plugin.jar().getName());
+                logLevel, basePluginFmt, "staticInspections.pluginResults",
+                plugin.name(), plugin.jar().getName());
 
             for (StaticAnalysisResult result : pluginResults) {
                 String typeI18nKey = "staticInspections." + result.getType().name().toLowerCase();
@@ -214,9 +214,9 @@ public class StaticAnalysisManager {
 
                 Keiko.INSTANCE.getLogger().logLocalized(logLevel, ansiFmt, typeI18nKey);
                 Keiko.INSTANCE.getLogger().logLocalized(
-                        logLevel, ansiFmt, "staticInspections.analysisName", result.getScannerName());
+                    logLevel, ansiFmt, "staticInspections.analysisName", result.getScannerName());
                 Keiko.INSTANCE.getLogger().logLocalized(
-                        logLevel, ansiFmt, analysisDescI18nKey, plugin.name(), plugin.jar().getName());
+                    logLevel, ansiFmt, analysisDescI18nKey, plugin.name(), plugin.jar().getName());
                 Keiko.INSTANCE.getLogger().logLocalized(logLevel, ansiFmt, "staticInspections.details");
 
                 int counter = 0;
@@ -228,8 +228,8 @@ public class StaticAnalysisManager {
             }
 
             Keiko.INSTANCE.getLogger().logLocalized(
-                    logLevel, basePluginFmt, "staticInspections.pluginSummary",
-                    warnings, critical, plugin.name(), plugin.jar().getName());
+                logLevel, basePluginFmt, "staticInspections.pluginSummary",
+                warnings, critical, plugin.name(), plugin.jar().getName());
 
             Keiko.INSTANCE.getLogger().log(logLevel, basePluginFmt, " ");
             Keiko.INSTANCE.getLogger().log(logLevel, basePluginFmt, " ");
@@ -245,7 +245,7 @@ public class StaticAnalysisManager {
             baseSummaryFmt = KeikoLogger.RED;
 
         Keiko.INSTANCE.getLogger().infoLocalized(
-                baseSummaryFmt, "staticInspections.finishSummary", warningsTotal, criticalTotal);
+            baseSummaryFmt, "staticInspections.finishSummary", warningsTotal, criticalTotal);
 
         return warningsTotal;
     }
@@ -260,30 +260,22 @@ public class StaticAnalysisManager {
         for (Class<?> inspectionClass : reflections.getTypesAnnotatedWith(RegisterStaticAnalysis.class)) {
             if (!StaticAnalysis.class.isAssignableFrom(inspectionClass))
                 throw new RuntimeException("illegal StaticAnalysis " +
-                        "(annotated but invalid type): " + inspectionClass.getName());
+                                           "(annotated but invalid type): " + inspectionClass.getName());
 
-            String inspectionName = StaticAnalysis
-                    .classToInspectionName((Class<? extends StaticAnalysis>) inspectionClass);
+            String inspectionName = StaticAnalysis.classToInspectionName((Class<? extends StaticAnalysis>) inspectionClass);
             String configName = StaticAnalysis.inspectionNameToConfigName(inspectionName);
 
-            if (InspectionsConfig.getHandle().get(configName + ".enabled", true)) {
+            if (InspectionsConfig.getHandle().getOrError(configName + ".enabled")) {
                 try {
-                    String inputJarPath = plugin.jar().getAbsolutePath()
-                            .replace("\\", "/"); // better Windows compatibility
-                    List<String> exclusions = InspectionsConfig.getHandle()
-                            .get(configName + ".exclusions", Collections.emptyList());
+                    boolean excluded = InspectionsConfig
+                        .getHandle().<List<String>>getOrError(configName + ".exclusions")
+                        .stream()
+                        .anyMatch(str ->
+                            plugin.name().equalsIgnoreCase(str) ||
+                            StringUtils.basicReplacements(str).equalsIgnoreCase(plugin.jar().getAbsolutePath().replace('\\', '/'))
+                        );
 
-                    boolean excluded = false;
-
-                    for (String exclusion : exclusions) {
-                        if (StringUtils.basicReplacements(exclusion).equals(inputJarPath)) {
-                            excluded = true;
-                            break;
-                        }
-                    }
-
-                    if (!excluded)
-                        inspections.add((Class<? extends StaticAnalysis>) inspectionClass);
+                    if (!excluded) inspections.add((Class<? extends StaticAnalysis>) inspectionClass);
                 } catch (Exception ex) {
                     throw new RuntimeException("invalid managed inspection: " + inspectionClass.getName(), ex);
                 }
@@ -311,8 +303,8 @@ public class StaticAnalysisManager {
         Map<String, List<StaticAnalysisResult>> cachedAnalysesResults = finalCache.getAnalysesResults();
 
         try (Workflow workflow = new Workflow()
-                .phase(new OpenJarFilePhase(plugin.jar()))
-                .phase(new DisassemblePhase(SimpleJavaDisassembler.class))) {
+            .phase(new OpenJarFilePhase(plugin.jar()))
+            .phase(new DisassemblePhase(SimpleJavaDisassembler.class))) {
             int cached = 0;
 
             for (Class<? extends StaticAnalysis> inspection : inspections) {
@@ -321,21 +313,21 @@ public class StaticAnalysisManager {
 
                 if (cachedResults != null) {
                     Keiko.INSTANCE.getLogger().debugLocalized(
-                            "staticInspections.caches.resultCached",
-                            inspectionName, plugin.name(), plugin.jar().getName(), cachedResults.size());
+                        "staticInspections.caches.resultCached",
+                        inspectionName, plugin.name(), plugin.jar().getName(), cachedResults.size());
 
                     results.get(plugin).addAll(cachedResults);
                     cached++;
                 } else {
                     Keiko.INSTANCE.getLogger().debugLocalized(
-                            "staticInspections.caches.resultNotCached",
-                            inspectionName, plugin.name(), plugin.jar().getName());
+                        "staticInspections.caches.resultNotCached",
+                        inspectionName, plugin.name(), plugin.jar().getName());
 
                     workflow.phase(new WalkClassesPhase(inspection));
                     cachesToPush
-                            .computeIfAbsent(plugin, k -> finalCache)
-                            .getAnalysesResults()
-                            .put(inspectionName, new ArrayList<>());
+                        .computeIfAbsent(plugin, k -> finalCache)
+                        .getAnalysesResults()
+                        .put(inspectionName, new ArrayList<>());
                 }
             }
 
@@ -347,11 +339,11 @@ public class StaticAnalysisManager {
 
                 if (result != WorkflowExecutionResult.FULL_SUCCESS) {
                     int isFatal = result == WorkflowExecutionResult.FATAL_FAILURE
-                            ? 1  // true
-                            : 0; // false
+                        ? 1  // true
+                        : 0; // false
 
                     Keiko.INSTANCE.getLogger().warningLocalized("staticInspections.err",
-                            isFatal, plugin.name(), plugin.jar().getName());
+                        isFatal, plugin.name(), plugin.jar().getName());
 
                     for (PhaseExecutionException error : workflow.getAllErrorsChronological())
                         Keiko.INSTANCE.getLogger().error("JMinima phase execution error:", error);
@@ -361,8 +353,8 @@ public class StaticAnalysisManager {
             }
 
             Keiko.INSTANCE.getLogger().debugLocalized(
-                    "staticInspections.caches.analysisStats",
-                    inspections.size(), plugin.name(), plugin.jar().getName(), cached);
+                "staticInspections.caches.analysisStats",
+                inspections.size(), plugin.name(), plugin.jar().getName(), cached);
 
             return false; // inspection succeeded
         }

@@ -36,9 +36,14 @@ public class IdentityFilter {
         Identity filter = null;
         String errorI18nKey = null;
 
-        if (tokens.length == 2) {
+        if (tokens.length >= 1) {
             String filterType = tokens[0].trim().toUpperCase();
-            String matcher = tokens[1].trim();
+            String matcher;
+            if (tokens.length > 1) {
+                matcher = tokens[1].trim();
+            } else {
+                matcher = tokens[0].trim();
+            }
 
             switch (filterType) {
                 case "FILE":
